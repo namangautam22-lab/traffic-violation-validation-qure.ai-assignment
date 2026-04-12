@@ -2,59 +2,50 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ShieldCheckIcon,
-  ListIcon,
-  ClipboardListIcon,
-  BarChartIcon,
-} from "lucide-react";
+import { ShieldCheckIcon, ListIcon, ClipboardListIcon, BarChartIcon, RotateCcwIcon } from "lucide-react";
 import { useReview } from "@/context/ReviewContext";
 
 export function Navigation() {
-  const pathname = usePathname();
-  const { state } = useReview();
-  const pendingCount = state.cases.filter((c) => c.status === "pending").length;
+  const pathname  = usePathname();
+  const { state, restartDemo } = useReview();
+
+  const pending = state.cases.filter((c) => c.status === "pending").length;
 
   const links = [
-    { href: "/queue", label: "Review Queue", icon: ListIcon, badge: pendingCount },
-    { href: "/audit", label: "Audit Log", icon: ClipboardListIcon, badge: null },
-    { href: "/insights", label: "Insights", icon: BarChartIcon, badge: null },
+    { href: "/queue",    label: "Queue",   icon: ListIcon,          badge: pending },
+    { href: "/audit",    label: "Audit",   icon: ClipboardListIcon, badge: null },
+    { href: "/insights", label: "Insights",icon: BarChartIcon,      badge: null },
   ];
 
   return (
-    <nav className="bg-slate-900 text-white border-b border-slate-800 px-6 py-3 flex items-center gap-6 sticky top-0 z-40">
-      {/* Logo / home */}
-      <Link href="/" className="flex items-center gap-2.5 mr-4 shrink-0">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <ShieldCheckIcon className="w-4.5 h-4.5 text-white" />
+    <nav className="bg-slate-900 text-white border-b border-slate-800 px-5 h-[57px] flex items-center gap-5 sticky top-0 z-40">
+      {/* Logo */}
+      <Link href="/queue" className="flex items-center gap-2 shrink-0 mr-2">
+        <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center">
+          <ShieldCheckIcon className="w-4 h-4 text-white" />
         </div>
-        <div>
+        <div className="hidden sm:block">
           <div className="text-sm font-bold leading-none">ViolationIQ</div>
-          <div className="text-xs text-slate-400 leading-none mt-0.5">
-            AI Review System
-          </div>
+          <div className="text-[10px] text-slate-500 leading-none mt-0.5">Review Console</div>
         </div>
       </Link>
 
       {/* Nav links */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
         {links.map(({ href, label, icon: Icon, badge }) => {
-          const isActive =
-            pathname === href || pathname.startsWith(href + "/");
+          const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
-                isActive
-                  ? "bg-slate-700 text-white"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                active ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-3.5 h-3.5" />
               {label}
               {badge !== null && badge > 0 && (
-                <span className="ml-0.5 bg-blue-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+                <span className="bg-blue-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                   {badge}
                 </span>
               )}
@@ -63,25 +54,34 @@ export function Navigation() {
         })}
       </div>
 
-      {/* Right side */}
+      {/* Right */}
       <div className="ml-auto flex items-center gap-3">
-        {/* Mode badge */}
-        <div
-          className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-            state.mode === "guided"
-              ? "bg-blue-700 text-blue-200"
-              : "bg-slate-700 text-slate-300"
-          }`}
-        >
-          {state.mode === "guided" ? "Guided Mode" : "Review Mode"}
+        {/* Session summary inline */}
+        <div className="hidden md:flex items-center gap-2 text-xs text-slate-500">
+          <span>
+            <span className="text-slate-300 font-semibold">{state.sessionStats.casesReviewed}</span> reviewed
+          </span>
+          <span>·</span>
+          <span>
+            <span className="text-slate-300 font-semibold">{pending}</span> pending
+          </span>
         </div>
 
-        {/* Reviewer badge */}
+        <button
+          onClick={restartDemo}
+          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-white border border-slate-700 hover:border-slate-500 px-2.5 py-1.5 rounded-lg transition-all"
+          title="Reset all cases to pending"
+        >
+          <RotateCcwIcon className="w-3 h-3" />
+          Reset
+        </button>
+
+        {/* Reviewer */}
         <div className="flex items-center gap-2 text-xs text-slate-400">
-          <div className="w-7 h-7 bg-slate-600 rounded-full flex items-center justify-center text-white font-bold">
+          <div className="w-6 h-6 bg-slate-600 rounded-full flex items-center justify-center text-white font-bold text-[10px]">
             A
           </div>
-          <span>Officer A. Williams</span>
+          <span className="hidden lg:block">Officer A. Williams</span>
         </div>
       </div>
     </nav>

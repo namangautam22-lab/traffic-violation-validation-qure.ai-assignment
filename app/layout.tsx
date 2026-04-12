@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ReviewProvider } from "@/context/ReviewContext";
 import { Navigation } from "@/components/Navigation";
-import { HelperStrip } from "@/components/HelperStrip";
 
 export const metadata: Metadata = {
   title: "ViolationIQ — AI Traffic Violation Review System",
@@ -20,8 +19,7 @@ export default function RootLayout({
       <body className="bg-slate-50 min-h-screen">
         <ReviewProvider>
           <Navigation />
-          <main className="pb-16">{children}</main>
-          <HelperStrip />
+          <main>{children}</main>
         </ReviewProvider>
       </body>
     </html>

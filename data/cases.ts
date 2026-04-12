@@ -426,6 +426,22 @@ export const MOCK_CASES: ViolationCase[] = [
   },
 ];
 
+// ─── Review lane classification ───────────────────────────────────────────────
+// Fast = high-conf clean cases → near 1-click approve
+// Exception = ambiguous, flagged, or low-conf → escalate / inspect
+// Review = everything in between → manual validation needed
+
+export type ReviewLane = "fast" | "review" | "exception";
+
+export function getReviewLane(c: ViolationCase): ReviewLane {
+  const hasFlags   = c.exceptionFlags.length > 0;
+  const lowAI      = c.aiConfidence < 65;
+  const lowPlate   = c.plateConfidence < 60;
+  if (lowAI || hasFlags || lowPlate) return "exception";
+  if (c.aiConfidence >= 85 && c.plateConfidence >= 85 && c.suggestedAction === "approve") return "fast";
+  return "review";
+}
+
 // ─── Helper: Get confidence bucket ───────────────────────────────────────────
 export function getConfidenceBucket(
   confidence: number

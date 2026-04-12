@@ -56,7 +56,20 @@ type Action =
   | { type: "ADVANCE_WALKTHROUGH" }
   | { type: "END_WALKTHROUGH" }
   | { type: "RESTART_DEMO" }
-  | { type: "CLOSE_CASE" };
+  | { type: "CLOSE_CASE" }
+  // Queue-first fast decisioning — bypasses OPEN_CASE + step flow
+  | {
+      type: "QUICK_DECISION";
+      payload: {
+        caseId: string;
+        action: UserDecision;
+        reason?: DismissReason;
+        reasonLabel?: string;
+        note?: string;
+        isEdgeCase: boolean;
+        durationSeconds?: number;
+      };
+    };
 
 // ─── Initial State ────────────────────────────────────────────────────────────
 
@@ -213,6 +226,48 @@ function reviewReducer(state: ReviewState, action: Action): ReviewState {
         cases: MOCK_CASES.map((c) => ({ ...c })),
       };
 
+    // Quick inline decision — no step flow, no checklist required
+    case "QUICK_DECISION": {
+      const { caseId, action: act, reason, reasonLabel, note, isEdgeCase, durationSeconds = 0 } = action.payload;
+
+      const record: ReviewRecord = {
+        caseId,
+        action: act,
+        reason,
+        reasonLabel,
+        note,
+        isEdgeCase,
+        reviewerId: REVIEWER.id,
+        reviewerName: REVIEWER.name,
+        submittedAt: new Date().toISOString(),
+        durationSeconds,
+        checklist: { violationConfirmed: null, vehicleConfirmed: null, exceptionPresent: null },
+      };
+
+      const updatedCases = state.cases.map((c) =>
+        c.id === caseId
+          ? { ...c, status: act as ViolationCase["status"], reviewHistory: [...c.reviewHistory, record] }
+          : c
+      );
+
+      const stats = { ...state.sessionStats };
+      stats.casesReviewed += 1;
+      stats.totalDurationSeconds += durationSeconds;
+      stats.reviewTimes = [...stats.reviewTimes, durationSeconds];
+      if (act === "approved") stats.approved += 1;
+      else if (act === "dismissed") stats.dismissed += 1;
+      else if (act === "escalated") stats.escalated += 1;
+      if (isEdgeCase) stats.edgeCasesTagged += 1;
+
+      return {
+        ...state,
+        cases: updatedCases,
+        decisions: [...state.decisions, record],
+        lastDecision: record,
+        sessionStats: stats,
+      };
+    }
+
     default:
       return state;
   }
@@ -235,6 +290,15 @@ interface ReviewContextValue {
     reasonLabel?: string;
     note?: string;
     isEdgeCase: boolean;
+  }) => void;
+  quickDecision: (payload: {
+    caseId: string;
+    action: UserDecision;
+    reason?: DismissReason;
+    reasonLabel?: string;
+    note?: string;
+    isEdgeCase: boolean;
+    durationSeconds?: number;
   }) => void;
   startWalkthrough: () => void;
   advanceWalkthrough: () => void;
@@ -281,6 +345,18 @@ export function ReviewProvider({ children }: { children: ReactNode }) {
     }) => dispatch({ type: "SUBMIT_DECISION", payload }),
     []
   );
+  const quickDecision = useCallback(
+    (payload: {
+      caseId: string;
+      action: UserDecision;
+      reason?: DismissReason;
+      reasonLabel?: string;
+      note?: string;
+      isEdgeCase: boolean;
+      durationSeconds?: number;
+    }) => dispatch({ type: "QUICK_DECISION", payload }),
+    []
+  );
   const startWalkthrough = useCallback(
     () => dispatch({ type: "START_WALKTHROUGH" }),
     []
@@ -311,6 +387,7 @@ export function ReviewProvider({ children }: { children: ReactNode }) {
         nextStep,
         setChecklist,
         submitDecision,
+        quickDecision,
         startWalkthrough,
         advanceWalkthrough,
         endWalkthrough,
