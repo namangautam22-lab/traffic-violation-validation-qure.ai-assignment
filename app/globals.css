@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+html {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* Smooth transitions for interactive elements */
+* {
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 100ms;
+}
+
+/* Scrollbar styling for dark areas */
+.dark-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark-scroll::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+.dark-scroll::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
