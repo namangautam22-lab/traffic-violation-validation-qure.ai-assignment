@@ -25,7 +25,7 @@ export function SummaryStrip() {
   ];
 
   return (
-    <div className="bg-slate-900 border-b border-slate-800">
+    <div id="tour-summary-strip" className="bg-slate-900 border-b border-slate-800">
       <div className="max-w-[1400px] mx-auto px-5 py-2 flex items-center gap-0 overflow-x-auto">
         {metrics.map((m, i) => (
           <div key={m.label} className="flex items-center shrink-0">

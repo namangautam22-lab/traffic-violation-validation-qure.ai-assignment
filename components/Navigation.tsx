@@ -1,16 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShieldCheckIcon, ListIcon, ClipboardListIcon, BarChartIcon, RotateCcwIcon, PlayCircleIcon } from "lucide-react";
 import { useReview } from "@/context/ReviewContext";
 import { GuidedTour } from "@/components/GuidedTour";
 
+const TOUR_KEY = "viq_tour_seen";
+
 export function Navigation() {
   const pathname  = usePathname();
   const { state, restartDemo } = useReview();
   const [showTour, setShowTour] = useState(false);
+
+  // Auto-open tour on first visit to the queue
+  useEffect(() => {
+    if (pathname === "/queue" || pathname === "/") {
+      if (!localStorage.getItem(TOUR_KEY)) {
+        // Small delay so the page renders before tour opens
+        const t = setTimeout(() => setShowTour(true), 600);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [pathname]);
+
+  function handleTourClose() {
+    setShowTour(false);
+    localStorage.setItem(TOUR_KEY, "1");
+  }
 
   const pending = state.cases.filter((c) => c.status === "pending").length;
 
@@ -73,7 +91,7 @@ export function Navigation() {
 
           {/* Tour button */}
           <button
-            onClick={() => setShowTour(true)}
+            onClick={() => { setShowTour(true); }}
             className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-2.5 py-1.5 rounded-lg transition-all"
             title="Start guided tour"
           >
@@ -100,7 +118,7 @@ export function Navigation() {
         </div>
       </nav>
 
-      {showTour && <GuidedTour onClose={() => setShowTour(false)} />}
+      {showTour && <GuidedTour onClose={handleTourClose} />}
     </>
   );
 }

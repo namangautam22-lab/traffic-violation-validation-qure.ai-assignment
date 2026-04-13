@@ -237,7 +237,7 @@ export default function QueuePage() {
       <SummaryStrip />
 
       {/* ── Filter bar ── */}
-      <div className="bg-white border-b border-slate-200 px-5 py-2.5 shrink-0">
+      <div id="tour-filter-bar" className="bg-white border-b border-slate-200 px-5 py-2.5 shrink-0">
         <div className="max-w-[1400px] mx-auto flex items-center gap-3 flex-wrap">
 
           {/* Search */}
@@ -403,7 +403,7 @@ export default function QueuePage() {
       </div>
 
       {/* ── Keyboard hint strip ── */}
-      <div className="bg-slate-900 border-t border-slate-800 py-1.5 shrink-0">
+      <div id="tour-keyboard-strip" className="bg-slate-900 border-t border-slate-800 py-1.5 shrink-0">
         <div className="max-w-[1400px] mx-auto px-5 flex items-center gap-4">
           <div className="flex items-center gap-3 text-xs text-slate-500 overflow-x-auto">
             {[
