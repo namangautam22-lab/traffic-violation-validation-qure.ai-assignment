@@ -223,23 +223,16 @@ function computeTooltipStyle(
 
     case "center":
     default: {
-      // If there's a spotlit element, position the tooltip so it doesn't
-      // cover the highlighted area. Push tooltip toward whichever edge of the
-      // viewport has more free space outside the spotlight.
       const targetCenterY = r.top + r.height / 2;
       const centerLeft = clampLeft(vw / 2 - TW / 2);
 
       if (targetCenterY <= vh / 2) {
-        // Spotlight is in the upper half → push tooltip to the bottom
-        const top = Math.max(
-          r.top + r.height + 16,   // just below the element
-          vh - TH_EST - 20          // anchored near viewport bottom
-        );
-        return { top: Math.min(top, vh - TH_EST - 12), left: centerLeft, width: TW };
+        // Spotlight in upper half → anchor tooltip's BOTTOM EDGE to viewport
+        // bottom so it never overflows downward, regardless of actual card height.
+        return { bottom: 16, left: centerLeft, width: TW };
       } else {
-        // Spotlight is in the lower half → push tooltip to the top
-        const top = Math.max(8, r.top - TH_EST - 16);
-        return { top, left: centerLeft, width: TW };
+        // Spotlight in lower half → anchor tooltip's TOP EDGE just below nav.
+        return { top: 70, left: centerLeft, width: TW };
       }
     }
   }
@@ -312,12 +305,16 @@ export function GuidedTour({ onClose }: Props) {
   }, [stepIdx, total, onClose]);
 
   const isLastStep = stepIdx === total - 1;
-  const isCenter = step.placement === "center" || !spotRect;
+  // hasTarget = there is a spotlit element; independent of tooltip placement
+  const hasTarget = spotRect !== null;
 
   return (
     <>
-      {/* ── Dark backdrop + click-to-close ── */}
-      {isCenter ? (
+      {/* ── Dark backdrop ── */}
+      {/* When there is NO target (step 7), use a simple blur backdrop.
+          When there IS a target the SVG mask below handles the darkening —
+          no backdrop-blur so the spotlight area stays sharp. */}
+      {!hasTarget ? (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           style={{ zIndex: 9040 }}
