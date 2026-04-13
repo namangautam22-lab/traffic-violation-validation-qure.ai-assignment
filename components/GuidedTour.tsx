@@ -222,8 +222,26 @@ function computeTooltipStyle(
     }
 
     case "center":
-    default:
-      return centered;
+    default: {
+      // If there's a spotlit element, position the tooltip so it doesn't
+      // cover the highlighted area. Push tooltip toward whichever edge of the
+      // viewport has more free space outside the spotlight.
+      const targetCenterY = r.top + r.height / 2;
+      const centerLeft = clampLeft(vw / 2 - TW / 2);
+
+      if (targetCenterY <= vh / 2) {
+        // Spotlight is in the upper half → push tooltip to the bottom
+        const top = Math.max(
+          r.top + r.height + 16,   // just below the element
+          vh - TH_EST - 20          // anchored near viewport bottom
+        );
+        return { top: Math.min(top, vh - TH_EST - 12), left: centerLeft, width: TW };
+      } else {
+        // Spotlight is in the lower half → push tooltip to the top
+        const top = Math.max(8, r.top - TH_EST - 16);
+        return { top, left: centerLeft, width: TW };
+      }
+    }
   }
 }
 

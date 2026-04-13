@@ -7,27 +7,21 @@ import { ShieldCheckIcon, ListIcon, ClipboardListIcon, BarChartIcon, RotateCcwIc
 import { useReview } from "@/context/ReviewContext";
 import { GuidedTour } from "@/components/GuidedTour";
 
-const TOUR_KEY = "viq_tour_seen";
-
 export function Navigation() {
   const pathname  = usePathname();
   const { state, restartDemo } = useReview();
   const [showTour, setShowTour] = useState(false);
 
-  // Auto-open tour on first visit to the queue
+  // Auto-open tour every time the queue page is loaded
   useEffect(() => {
     if (pathname === "/queue" || pathname === "/") {
-      if (!localStorage.getItem(TOUR_KEY)) {
-        // Small delay so the page renders before tour opens
-        const t = setTimeout(() => setShowTour(true), 600);
-        return () => clearTimeout(t);
-      }
+      const t = setTimeout(() => setShowTour(true), 600);
+      return () => clearTimeout(t);
     }
   }, [pathname]);
 
   function handleTourClose() {
     setShowTour(false);
-    localStorage.setItem(TOUR_KEY, "1");
   }
 
   const pending = state.cases.filter((c) => c.status === "pending").length;
