@@ -48,7 +48,7 @@ const STEPS: Step[] = [
   },
   {
     getTarget: () => document.querySelector('[id^="case-"]'),
-    placement: "right",
+    placement: "center",
     icon: ListIcon,
     color: "slate",
     title: "Case Row — Collapsed Scan",
@@ -57,7 +57,7 @@ const STEPS: Step[] = [
   },
   {
     getTarget: () => document.querySelector('[id^="case-"]'),
-    placement: "right",
+    placement: "center",
     icon: ZapIcon,
     color: "blue",
     title: "Click to Expand — Inline Details",
@@ -66,7 +66,7 @@ const STEPS: Step[] = [
   },
   {
     getTarget: () => document.querySelector('[id^="case-"]'),
-    placement: "right",
+    placement: "center",
     icon: ArrowUpCircleIcon,
     color: "purple",
     title: "Approve · Dismiss · Escalate",
@@ -145,6 +145,8 @@ const TW  = 390; // tooltip card width (px)
 
 interface SpotRect { top: number; left: number; width: number; height: number }
 
+const TH_EST = 300; // estimated tooltip height for overflow checks
+
 function computeTooltipStyle(
   r: SpotRect,
   placement: Step["placement"]
@@ -152,51 +154,76 @@ function computeTooltipStyle(
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
+  // Always-safe centered fallback
+  const centered: React.CSSProperties = {
+    top: "50%", left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: Math.min(TW, vw - 32),
+  };
+
+  // Horizontal center of spotlight target, clamped inside viewport
   const clampLeft = (x: number) => Math.max(16, Math.min(x, vw - TW - 16));
+  const centerLeft = clampLeft(r.left + r.width / 2 - TW / 2);
+
+  // If element is too wide for left/right placement, force center
+  const isWide = r.width > vw * 0.55;
 
   switch (placement) {
-    case "below":
-      return {
-        top:  r.top + r.height + SP + GAP,
-        left: clampLeft(r.left + r.width / 2 - TW / 2),
-        width: TW,
-      };
-    case "above":
-      return {
-        bottom: vh - r.top + SP + GAP,
-        left: clampLeft(r.left + r.width / 2 - TW / 2),
-        width: TW,
-      };
-    case "right": {
-      const tooltipLeft = r.left + r.width + SP + GAP;
-      // If right side doesn't fit, fall back to left
-      if (tooltipLeft + TW > vw - 8) {
-        return {
-          top: Math.max(16, Math.min(r.top, vh - 420)),
-          right: vw - r.left + SP + GAP,
-          width: TW,
-        };
+    case "below": {
+      const top = r.top + r.height + SP + GAP;
+      // Not enough room below → try above
+      if (top + TH_EST > vh - 8) {
+        const aboveTop = r.top - SP - GAP - TH_EST;
+        if (aboveTop >= 8) return { top: aboveTop, left: centerLeft, width: TW };
+        return centered; // no room above or below → center
       }
-      return {
-        top: Math.max(16, Math.min(r.top, vh - 420)),
-        left: tooltipLeft,
-        width: TW,
-      };
+      return { top, left: centerLeft, width: TW };
     }
-    case "left":
-      return {
-        top: Math.max(16, Math.min(r.top, vh - 420)),
-        right: vw - r.left + SP + GAP,
-        width: TW,
-      };
+
+    case "above": {
+      const tooltipBottom = r.top - SP - GAP; // y of tooltip's bottom edge
+      const tooltipTop = tooltipBottom - TH_EST;
+      if (tooltipTop < 8) {
+        // Not enough room above → try below
+        const belowTop = r.top + r.height + SP + GAP;
+        if (belowTop + TH_EST < vh - 8) return { top: belowTop, left: centerLeft, width: TW };
+        return centered;
+      }
+      // Use CSS bottom so tooltip hugs the spotlight from above
+      return { bottom: vh - tooltipBottom, left: centerLeft, width: TW };
+    }
+
+    case "right": {
+      if (isWide) return centered; // element fills viewport width → can't fit right
+      const left = r.left + r.width + SP + GAP;
+      if (left + TW > vw - 8) {
+        // Try left side
+        const leftLeft = r.left - SP - GAP - TW;
+        if (leftLeft >= 8) {
+          return { top: Math.max(16, Math.min(r.top, vh - TH_EST - 16)), left: leftLeft, width: TW };
+        }
+        return centered; // no room either side
+      }
+      return { top: Math.max(16, Math.min(r.top, vh - TH_EST - 16)), left, width: TW };
+    }
+
+    case "left": {
+      if (isWide) return centered;
+      const left = r.left - SP - GAP - TW;
+      if (left < 8) {
+        // Try right side
+        const rightLeft = r.left + r.width + SP + GAP;
+        if (rightLeft + TW < vw - 8) {
+          return { top: Math.max(16, Math.min(r.top, vh - TH_EST - 16)), left: rightLeft, width: TW };
+        }
+        return centered;
+      }
+      return { top: Math.max(16, Math.min(r.top, vh - TH_EST - 16)), left, width: TW };
+    }
+
     case "center":
     default:
-      return {
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: TW,
-      };
+      return centered;
   }
 }
 
