@@ -26,16 +26,19 @@ const SCENE_OVERLAYS: Record<
   string,
   { signalColor?: string; showSignal?: boolean; showSpeedGun?: boolean; speedValue?: string }
 > = {
-  red_light: { showSignal: true, signalColor: "#ef4444" },
-  speeding: { showSpeedGun: true, speedValue: "52mph" },
-  illegal_turn: { showSignal: false },
-  parking: {},
-  bus_lane: {},
-  hov: {},
-  emergency_vehicle: { showSignal: true, signalColor: "#ef4444" },
-  low_visibility: {},
-  ocr_mismatch: {},
-  false_detection: {},
+  red_light:           { showSignal: true, signalColor: "#ef4444" },
+  speeding:            { showSpeedGun: true, speedValue: "89km/h" },
+  wrong_side:          { showSignal: false },
+  no_helmet:           {},
+  illegal_turn:        { showSignal: false },
+  parking:             {},
+  bus_lane:            {},
+  blocked_intersection:{},
+  hov:                 {},
+  emergency_vehicle:   { showSignal: true, signalColor: "#ef4444" },
+  low_visibility:      {},
+  ocr_mismatch:        {},
+  false_detection:     {},
 };
 
 export function MockCameraFrame({

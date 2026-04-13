@@ -1,32 +1,31 @@
 import type { ViolationCase } from "@/types";
 
-// ─── Mock Violation Cases ─────────────────────────────────────────────────────
-// 10 realistic demo cases covering a wide range of violation types,
-// confidence levels, and edge cases for a comprehensive prototype demo.
+// ─── Mock Violation Cases — Delhi / NCR Traffic Enforcement ───────────────────
+// 10 realistic cases covering Indian traffic violations, varying confidence
+// levels, Delhi/NCR locations, Indian plates, and local scenarios.
 
 export const MOCK_CASES: ViolationCase[] = [
-  // ── Case 1: Red Light – High Confidence ──────────────────────────────────
+  // ── Case 1: Red Light Jump — ITO Crossing, High Confidence ──────────────
   {
-    id: "VIO-2024-0841",
+    id: "VIO-DL-2024-0841",
     violationType: "red_light",
     violationLabel: "Red Light Violation",
     timestamp: "2024-07-15T08:23:41Z",
-    location: "Main St & 5th Ave — Intersection Camera North",
-    cameraId: "CAM-N-0127",
+    location: "ITO Crossing — Vikas Marg · Cam North",
+    cameraId: "DL-ITO-N-07",
     aiConfidence: 97,
-    plateText: "TXD 4821",
+    plateText: "DL 3C AB 4581",
     plateConfidence: 99,
     aiRationale:
-      "Vehicle entered intersection 1.4 seconds after signal turned red. Clear frontal view captured. Plate fully legible. No pedestrian or emergency conflict detected.",
+      "Vehicle entered intersection 1.6 seconds after signal turned red at ITO Crossing. Frontal plate clearly captured. No emergency lights detected. Stop line markings fully visible.",
     evidenceFrames: [
       {
         id: "f1-1",
         label: "Signal turns red",
-        offsetSeconds: -1.4,
+        offsetSeconds: -1.6,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Traffic signal clearly shows red. Vehicle approaching at speed.",
+        sceneDescription: "Traffic signal clearly shows red. Vehicle approaching at speed on Vikas Marg.",
         highlightZones: ["signal"],
       },
       {
@@ -35,18 +34,16 @@ export const MOCK_CASES: ViolationCase[] = [
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "day",
-        sceneDescription:
-          "Vehicle fully within intersection. Signal is red. Stop line visible behind vehicle.",
+        sceneDescription: "Vehicle fully within intersection. Signal is red. Stop line visible behind vehicle.",
         highlightZones: ["vehicle", "signal", "plate"],
       },
       {
         id: "f1-3",
-        label: "Plate capture — rear view",
+        label: "Plate capture — rear",
         offsetSeconds: 1.2,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Rear plate TXD 4821 captured at high resolution as vehicle clears intersection.",
+        sceneDescription: "Rear plate DL 3C AB 4581 captured clearly as vehicle exits ITO Crossing.",
         highlightZones: ["plate"],
       },
     ],
@@ -56,39 +53,37 @@ export const MOCK_CASES: ViolationCase[] = [
     reviewHistory: [],
   },
 
-  // ── Case 2: Speeding – High Confidence ────────────────────────────────────
+  // ── Case 2: Wrong-Side Driving — Ring Road, High Confidence ──────────────
   {
-    id: "VIO-2024-0842",
-    violationType: "speeding",
-    violationLabel: "Speeding — 52 mph in 35 mph Zone",
+    id: "VIO-DL-2024-0842",
+    violationType: "wrong_side",
+    violationLabel: "Wrong-Side Driving",
     timestamp: "2024-07-15T09:11:08Z",
-    location: "Riverside Blvd — Speed Enforcement Zone (School)",
-    cameraId: "CAM-S-0044",
+    location: "Ring Road Southbound — Ashram Chowk Entry",
+    cameraId: "DL-RING-E-14",
     aiConfidence: 94,
-    plateText: "KLP 7733",
+    plateText: "HR 26 DK 1024",
     plateConfidence: 96,
     aiRationale:
-      "Radar + vision fusion confirms 52 mph in a 35 mph school zone. Speed recorded via dual-loop sensor. Vehicle identity confirmed via front and rear plate match.",
+      "Vehicle entered Ring Road against traffic flow from Ashram Chowk slip road. Trajectory confirmed wrong-side entry via dual-camera triangulation. Lane markings and divider clearly visible. No construction diversion active in this zone.",
     evidenceFrames: [
       {
         id: "f2-1",
-        label: "Speed radar trigger",
+        label: "Entry against traffic",
         offsetSeconds: -0.5,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Speed zone sign visible. Radar display shows 52 mph reading.",
-        highlightZones: ["sign", "vehicle"],
+        sceneDescription: "Vehicle visible moving against oncoming traffic on Ring Road. Divider clearly marked.",
+        highlightZones: ["vehicle", "lane"],
       },
       {
         id: "f2-2",
-        label: "Front plate capture",
+        label: "Front plate + trajectory",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "day",
-        sceneDescription:
-          "Clear frontal capture. Speed overlay: 52 mph. Zone limit overlay: 35 mph.",
-        highlightZones: ["vehicle", "plate"],
+        sceneDescription: "Front plate HR 26 DK 1024 captured. Vehicle clearly on wrong side of road.",
+        highlightZones: ["vehicle", "plate", "lane"],
       },
     ],
     suggestedAction: "approve",
@@ -97,79 +92,36 @@ export const MOCK_CASES: ViolationCase[] = [
     reviewHistory: [],
   },
 
-  // ── Case 3: Illegal Turn – Medium Confidence ──────────────────────────────
+  // ── Case 3: No-Parking — Connaught Place, Low Plate Confidence ────────────
   {
-    id: "VIO-2024-0843",
-    violationType: "illegal_turn",
-    violationLabel: "Illegal Left Turn — No Turn Signal",
-    timestamp: "2024-07-15T10:47:22Z",
-    location: "Oak Ave & Commerce Dr — Intersection West",
-    cameraId: "CAM-W-0088",
-    aiConfidence: 71,
-    plateText: "MRZ 1190",
-    plateConfidence: 88,
+    id: "VIO-DL-2024-0843",
+    violationType: "parking",
+    violationLabel: "No-Parking Zone Violation",
+    timestamp: "2024-07-14T14:05:55Z",
+    location: "Connaught Place Block B — Inner Circle",
+    cameraId: "DL-CP-B-03",
+    aiConfidence: 83,
+    plateText: "DL 7C XX 2?01",
+    plateConfidence: 44,
     aiRationale:
-      "Vehicle made left turn at an intersection marked with a No Left Turn sign. Turn signal usage unclear due to angle. Sign partially obstructed by tree foliage.",
+      "Vehicle stationary in designated No-Parking zone (yellow line) for 22+ minutes. Plate partially obscured — OCR returned low-confidence characters at positions 6 and 10. No-Parking sign clearly visible. Vehicle identity requires manual plate verification before citation.",
     evidenceFrames: [
       {
         id: "f3-1",
-        label: "Vehicle approach",
-        offsetSeconds: -2,
-        isPrimary: false,
-        sceneType: "day",
-        sceneDescription:
-          "Vehicle in right lane approaching intersection. No-turn sign visible but partially obstructed.",
-        highlightZones: ["sign", "vehicle"],
-      },
-      {
-        id: "f3-2",
-        label: "Turn maneuver",
-        offsetSeconds: 0,
-        isPrimary: true,
-        sceneType: "day",
-        sceneDescription:
-          "Vehicle executing left turn. No Left Turn sign visible. Camera angle oblique — some ambiguity.",
-        highlightZones: ["vehicle", "lane", "sign"],
-      },
-    ],
-    suggestedAction: "review",
-    exceptionFlags: ["sign_obstruction", "ambiguous_angle"],
-    status: "pending",
-    reviewHistory: [],
-  },
-
-  // ── Case 4: Parking – Unclear Plate ───────────────────────────────────────
-  {
-    id: "VIO-2024-0844",
-    violationType: "parking",
-    violationLabel: "No Parking Zone Violation",
-    timestamp: "2024-07-14T14:05:55Z",
-    location: "Pine St — Bus Stop Zone 14B",
-    cameraId: "CAM-P-0312",
-    aiConfidence: 83,
-    plateText: "F?T 20?8",
-    plateConfidence: 44,
-    aiRationale:
-      "Vehicle parked in designated Bus Stop zone for 18+ minutes. Plate partially obscured — OCR returned low-confidence characters at positions 2 and 7.",
-    evidenceFrames: [
-      {
-        id: "f4-1",
         label: "Vehicle parked — wide view",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "day",
-        sceneDescription:
-          "Stationary vehicle in bus stop zone. No Parking sign clearly visible. Plate partially obscured by dirt/damage.",
+        sceneDescription: "Stationary vehicle in No-Parking zone. Yellow line visible. Sign visible. Plate partially dirty.",
         highlightZones: ["vehicle", "sign"],
       },
       {
-        id: "f4-2",
+        id: "f3-2",
         label: "Plate close-up",
         offsetSeconds: 2,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Zoomed plate capture. Characters 2 and 7 unclear — possible FRT 2008 or FBT 2078.",
+        sceneDescription: "Zoomed plate. Characters at positions 6 and 10 unclear — possible DL 7C MX 2001 or DL 7C XX 2701.",
         highlightZones: ["plate"],
       },
     ],
@@ -179,38 +131,36 @@ export const MOCK_CASES: ViolationCase[] = [
     reviewHistory: [],
   },
 
-  // ── Case 5: Bus Lane – Signage Ambiguity ──────────────────────────────────
+  // ── Case 4: Bus-Lane Misuse — Ashram Chowk, Faded Markings ───────────────
   {
-    id: "VIO-2024-0845",
+    id: "VIO-DL-2024-0844",
     violationType: "bus_lane",
-    violationLabel: "Bus Lane Infringement",
+    violationLabel: "Bus Lane Misuse",
     timestamp: "2024-07-15T07:58:14Z",
-    location: "Downtown Corridor — Grant Ave Bus Lane (Blk 400–500)",
-    cameraId: "CAM-B-0019",
+    location: "Mathura Road — Ashram Chowk Bus Lane (Km 3.2)",
+    cameraId: "DL-ASH-BL-02",
     aiConfidence: 68,
-    plateText: "VNQ 5502",
+    plateText: "UP 16 BT 7712",
     plateConfidence: 91,
     aiRationale:
-      "Vehicle detected in Bus Only lane during enforcement hours (7–9 AM). However, lane marking paint is significantly faded at this block. Signage review recommended.",
+      "Vehicle detected in Bus Only lane during enforcement hours (07:00–10:00). However, 'BUS ONLY' road markings are 65% faded at this stretch. Signage present but 40 metres from entry point. Recommends signage and marking audit before citation.",
     evidenceFrames: [
       {
-        id: "f5-1",
-        label: "Lane entry",
+        id: "f4-1",
+        label: "Vehicle in bus lane",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "day",
-        sceneDescription:
-          "Vehicle in bus lane. Lane marking faded. Bus Only sign present but at distance.",
+        sceneDescription: "Vehicle in designated bus lane. Faded lane markings visible. Distant sign present.",
         highlightZones: ["vehicle", "lane", "sign"],
       },
       {
-        id: "f5-2",
+        id: "f4-2",
         label: "Lane marking detail",
         offsetSeconds: 1.5,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Ground-level lane paint is 70% worn. Ambiguity exists about visible boundary.",
+        sceneDescription: "Ground-level view. 'BUS ONLY' paint is 65% worn. Boundary ambiguous.",
         highlightZones: ["lane"],
       },
     ],
@@ -220,79 +170,114 @@ export const MOCK_CASES: ViolationCase[] = [
     reviewHistory: [],
   },
 
-  // ── Case 6: HOV False Positive ────────────────────────────────────────────
+  // ── Case 5: Helmetless Two-Wheeler — Dhaula Kuan Flyover ─────────────────
   {
-    id: "VIO-2024-0846",
-    violationType: "hov",
-    violationLabel: "HOV Lane Violation — Single Occupant",
-    timestamp: "2024-07-15T07:34:50Z",
-    location: "I-280 Northbound — HOV Lane Camera MP 14.2",
-    cameraId: "CAM-H-0007",
-    aiConfidence: 61,
-    plateText: "BXR 9940",
-    plateConfidence: 93,
+    id: "VIO-DL-2024-0845",
+    violationType: "no_helmet",
+    violationLabel: "Helmetless Two-Wheeler Rider",
+    timestamp: "2024-07-15T08:44:22Z",
+    location: "Dhaula Kuan Flyover — Southbound Exit",
+    cameraId: "DL-DK-FLY-01",
+    aiConfidence: 92,
+    plateText: "DL 4S AZ 9981",
+    plateConfidence: 95,
     aiRationale:
-      "Occupancy detection model flagged single occupant in HOV-2 zone. However, tinted rear windows and sun glare limited visibility into vehicle interior. Confidence is below threshold.",
+      "Two-wheeler rider clearly visible without helmet on Dhaula Kuan flyover. High-resolution overhead camera captured both rider and pillion. Neither occupant wearing a helmet. Plate confirmed via rear capture. Clear violation under MV Act Section 129.",
     evidenceFrames: [
       {
-        id: "f6-1",
-        label: "HOV lane — vehicle capture",
+        id: "f5-1",
+        label: "Overhead — rider visible",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "day",
-        sceneDescription:
-          "Vehicle in HOV lane. Tinted windows. Sun glare on windshield. Occupant count uncertain.",
-        highlightZones: ["vehicle", "lane"],
+        sceneDescription: "Overhead view of two-wheeler. Rider and pillion clearly visible without helmets.",
+        highlightZones: ["vehicle", "plate"],
       },
       {
-        id: "f6-2",
-        label: "Interior visibility attempt",
+        id: "f5-2",
+        label: "Rear plate capture",
         offsetSeconds: 0.8,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Attempted interior view. Rear seat ambiguous due to tint and glare.",
-        highlightZones: ["vehicle"],
+        sceneDescription: "Rear plate DL 4S AZ 9981 captured at high resolution as vehicle exits flyover.",
+        highlightZones: ["plate"],
       },
     ],
-    suggestedAction: "dismiss",
-    exceptionFlags: ["tinted_windows", "sun_glare", "occupancy_uncertain"],
+    suggestedAction: "approve",
+    exceptionFlags: [],
     status: "pending",
     reviewHistory: [],
   },
 
-  // ── Case 7: Emergency Vehicle Exception ───────────────────────────────────
+  // ── Case 6: Illegal U-Turn — Karol Bagh, Medium Confidence ───────────────
   {
-    id: "VIO-2024-0847",
-    violationType: "emergency_vehicle",
-    violationLabel: "Red Light — Possible Emergency Vehicle",
-    timestamp: "2024-07-13T22:15:33Z",
-    location: "Central Ave & 12th St — Night Camera",
-    cameraId: "CAM-N-0088",
-    aiConfidence: 88,
-    plateText: "EMG 7741",
-    plateConfidence: 85,
+    id: "VIO-DL-2024-0846",
+    violationType: "illegal_turn",
+    violationLabel: "Illegal U-Turn",
+    timestamp: "2024-07-15T07:34:50Z",
+    location: "Karol Bagh Crossing — Ajmal Khan Rd",
+    cameraId: "DL-KB-INT-06",
+    aiConfidence: 71,
+    plateText: "DL 8C NP 3341",
+    plateConfidence: 88,
     aiRationale:
-      "Vehicle ran red light at 22:15. High confidence on violation. However, emergency light strobes visible in frame. Vehicle may be unmarked emergency response unit responding to incident.",
+      "Vehicle made U-turn at Karol Bagh crossing. No U-Turn sign present at this junction but traffic movement rules posted 30m east. AI confidence is medium — camera angle oblique, and turn radius partially matches a permitted wide left turn. Manual review required.",
+    evidenceFrames: [
+      {
+        id: "f6-1",
+        label: "Vehicle approach",
+        offsetSeconds: -2,
+        isPrimary: false,
+        sceneType: "day",
+        sceneDescription: "Vehicle in left lane approaching Karol Bagh crossing. No U-Turn sign not directly visible.",
+        highlightZones: ["sign", "vehicle"],
+      },
+      {
+        id: "f6-2",
+        label: "U-turn maneuver",
+        offsetSeconds: 0,
+        isPrimary: true,
+        sceneType: "day",
+        sceneDescription: "Vehicle executing U-turn. Camera angle oblique — possible wide legal turn ambiguity.",
+        highlightZones: ["vehicle", "lane"],
+      },
+    ],
+    suggestedAction: "review",
+    exceptionFlags: ["sign_distance", "ambiguous_angle"],
+    status: "pending",
+    reviewHistory: [],
+  },
+
+  // ── Case 7: Ambulance Exception — Safdarjung Hospital Road ───────────────
+  {
+    id: "VIO-DL-2024-0847",
+    violationType: "emergency_vehicle",
+    violationLabel: "Red Light — Possible Emergency Override",
+    timestamp: "2024-07-13T22:15:33Z",
+    location: "Safdarjung Hospital Rd & Ring Rd — Night Camera",
+    cameraId: "DL-SFJ-S-09",
+    aiConfidence: 88,
+    plateText: "DL 1LM 0012",
+    plateConfidence: 82,
+    aiRationale:
+      "Vehicle ran red light at 22:15 near Safdarjung Hospital intersection. High confidence on red-light violation. However, blue-red strobe lights visible in frame. Vehicle may be an unmarked emergency response unit responding to a hospital call. Emergency override must be verified before citation.",
     evidenceFrames: [
       {
         id: "f7-1",
-        label: "Night approach — lights visible",
+        label: "Night approach — strobes visible",
         offsetSeconds: -1,
         isPrimary: false,
         sceneType: "night",
-        sceneDescription:
-          "Vehicle approaching at speed. Blue/red strobe lights active on dashboard. Red signal ahead.",
+        sceneDescription: "Vehicle approaching at speed near Safdarjung. Blue/red strobe lights active. Red signal ahead.",
         highlightZones: ["vehicle", "signal"],
       },
       {
         id: "f7-2",
-        label: "Intersection crossing",
+        label: "Intersection crossing on red",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "night",
-        sceneDescription:
-          "Vehicle through red signal. Emergency strobes clearly visible. No other traffic in intersection.",
+        sceneDescription: "Vehicle through red signal. Emergency strobes clearly visible. No other vehicle in intersection.",
         highlightZones: ["vehicle", "signal", "plate"],
       },
     ],
@@ -302,28 +287,27 @@ export const MOCK_CASES: ViolationCase[] = [
     reviewHistory: [],
   },
 
-  // ── Case 8: Rainy / Low Visibility ────────────────────────────────────────
+  // ── Case 8: Rainy Night OCR Mismatch — Noida Border ─────────────────────
   {
-    id: "VIO-2024-0848",
-    violationType: "low_visibility",
-    violationLabel: "Speeding — Low Visibility Conditions",
-    timestamp: "2024-07-12T17:42:19Z",
-    location: "Westfield Hwy — Rain Zone Camera (MP 8.7)",
-    cameraId: "CAM-R-0055",
+    id: "VIO-DL-2024-0848",
+    violationType: "ocr_mismatch",
+    violationLabel: "Speeding — OCR Mismatch (Rain)",
+    timestamp: "2024-07-12T21:42:19Z",
+    location: "NH-24 Noida Border — DND Flyway Entry",
+    cameraId: "UP-NDBD-E-03",
     aiConfidence: 58,
-    plateText: "LPV 3317",
-    plateConfidence: 67,
+    plateText: "UP 1? BX 7?18",
+    plateConfidence: 39,
     aiRationale:
-      "Speed reading: 49 mph in 35 mph zone. Heavy rain conditions degraded image quality. Plate reading partially obscured by water streaks. Evidence quality insufficient for citation.",
+      "Speed recorded: 89 km/h in 60 km/h zone on NH-24. Heavy rain degraded image quality significantly. OCR returned ambiguous characters at positions 4 and 9. VAHAN lookup returned UP 16 BX 7918 as closest match but confidence is insufficient for citation. Evidence quality fails minimum threshold.",
     evidenceFrames: [
       {
         id: "f8-1",
-        label: "Rainy conditions — vehicle approach",
+        label: "Rainy conditions — vehicle",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "rain",
-        sceneDescription:
-          "Heavy rain. Vehicle barely visible. Speed data from radar: 49 mph. Plate smeared with rain distortion.",
+        sceneDescription: "Heavy rain on NH-24. Vehicle barely visible. Speed radar: 89 km/h. Plate smeared.",
         highlightZones: ["vehicle"],
       },
       {
@@ -332,80 +316,76 @@ export const MOCK_CASES: ViolationCase[] = [
         offsetSeconds: 0.6,
         isPrimary: false,
         sceneType: "rain",
-        sceneDescription:
-          "Plate partially legible but rain distortion makes confident OCR impossible.",
+        sceneDescription: "Plate partially legible. Rain distortion makes confident OCR impossible at positions 4, 9.",
         highlightZones: ["plate"],
       },
     ],
     suggestedAction: "dismiss",
-    exceptionFlags: ["poor_visibility", "weather_degradation", "low_plate_confidence"],
+    exceptionFlags: ["poor_visibility", "weather_degradation", "low_plate_confidence", "ocr_mismatch"],
     status: "pending",
     reviewHistory: [],
   },
 
-  // ── Case 9: OCR Mismatch ──────────────────────────────────────────────────
+  // ── Case 9: Blocked Intersection — AIIMS Flyover Junction ────────────────
   {
-    id: "VIO-2024-0849",
-    violationType: "ocr_mismatch",
-    violationLabel: "Red Light — OCR Plate Mismatch",
-    timestamp: "2024-07-11T16:20:07Z",
-    location: "Harbor Blvd & Station Rd — South Camera",
-    cameraId: "CAM-S-0201",
-    aiConfidence: 89,
-    plateText: "8XR 441 (vs. DMV: BXR 441)",
-    plateConfidence: 52,
+    id: "VIO-DL-2024-0849",
+    violationType: "blocked_intersection",
+    violationLabel: "Intersection Blocking",
+    timestamp: "2024-07-11T09:20:07Z",
+    location: "AIIMS Flyover Junction — Sri Aurobindo Marg",
+    cameraId: "DL-AIIMS-JN-04",
+    aiConfidence: 79,
+    plateText: "DL 5S RT 6620",
+    plateConfidence: 93,
     aiRationale:
-      "Violation clearly recorded — vehicle ran red light. However, OCR read '8XR 441'. DMV lookup returns 'BXR 441' for similar plate. Character '8' vs 'B' confusion likely due to font and angle. Plate re-verification required before citation issuance.",
+      "Vehicle stopped in box junction at AIIMS junction for 28 seconds during green phase, blocking cross-traffic. Yellow box junction markings partially faded. Violation confirmed but marginal — vehicle appears to have been caught in sudden traffic bunching from ambulance bay exit. Review flagged.",
     evidenceFrames: [
       {
         id: "f9-1",
-        label: "Violation frame",
+        label: "Vehicle blocking junction",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "day",
-        sceneDescription:
-          "Clear red light violation. Vehicle in intersection on red. Plate visible but OCR mismatch flagged.",
-        highlightZones: ["vehicle", "signal", "plate"],
+        sceneDescription: "Vehicle stationary in box junction at AIIMS. Cross-traffic blocked. Faded yellow box visible.",
+        highlightZones: ["vehicle", "lane"],
       },
       {
         id: "f9-2",
-        label: "Plate — OCR zoom",
-        offsetSeconds: 0.4,
+        label: "Box marking detail",
+        offsetSeconds: 5,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Zoomed plate. Ambiguous '8' vs 'B' character at position 1. Manual read needed.",
-        highlightZones: ["plate"],
+        sceneDescription: "Wider view showing vehicle still blocking. Hospital ambulance bay visible at top of frame.",
+        highlightZones: ["vehicle", "sign"],
       },
     ],
     suggestedAction: "review",
-    exceptionFlags: ["ocr_mismatch", "character_ambiguity"],
+    exceptionFlags: ["faded_lane_marking", "possible_ambulance_conflict"],
     status: "pending",
     reviewHistory: [],
   },
 
-  // ── Case 10: Clear False Detection ───────────────────────────────────────
+  // ── Case 10: Lane Violation — NH-48 Gurgaon Toll, Low Confidence ─────────
   {
-    id: "VIO-2024-0850",
+    id: "VIO-DL-2024-0850",
     violationType: "false_detection",
-    violationLabel: "Illegal U-Turn — Likely False Positive",
+    violationLabel: "Lane Violation — Likely False Positive",
     timestamp: "2024-07-10T11:05:44Z",
-    location: "Maple Ave & 3rd St — Wide Intersection",
-    cameraId: "CAM-W-0144",
-    aiConfidence: 39,
-    plateText: "GHN 8801",
+    location: "NH-48 — Gurgaon Toll Plaza (Km 28.4)",
+    cameraId: "HR-NH48-T-11",
+    aiConfidence: 37,
+    plateText: "HR 29 AK 8814",
     plateConfidence: 90,
     aiRationale:
-      "Model flagged a U-turn maneuver but vehicle trajectory analysis suggests a wide legal 3-point turn in a permissible zone. No No-U-Turn sign present at this intersection. Model may have misclassified due to camera angle causing turn radius distortion.",
+      "Model flagged lane violation on NH-48 near Gurgaon toll. However, trajectory analysis shows vehicle was performing a legal lane merge before toll plaza where lane narrowing is permitted. No lane violation sign present. Camera angle distorts merge radius. Likely false positive — recommend dismiss.",
     evidenceFrames: [
       {
         id: "f10-1",
-        label: "Turn maneuver — wide view",
+        label: "Lane merge — wide view",
         offsetSeconds: 0,
         isPrimary: true,
         sceneType: "day",
-        sceneDescription:
-          "Vehicle executing wide turn. No No-U-Turn sign visible. Intersection has legal U-turn provision.",
+        sceneDescription: "Vehicle merging lanes near toll plaza. Legal narrowing zone visible. No restriction signs.",
         highlightZones: ["vehicle", "lane"],
       },
       {
@@ -414,8 +394,7 @@ export const MOCK_CASES: ViolationCase[] = [
         offsetSeconds: -3,
         isPrimary: false,
         sceneType: "day",
-        sceneDescription:
-          "Wide-angle view. No restriction signs at this intersection. Model false positive likely.",
+        sceneDescription: "Wide-angle view of toll approach. No lane restriction signs visible. Legal merge zone.",
         highlightZones: ["sign"],
       },
     ],
@@ -427,19 +406,41 @@ export const MOCK_CASES: ViolationCase[] = [
 ];
 
 // ─── Review lane classification ───────────────────────────────────────────────
-// Fast = high-conf clean cases → near 1-click approve
-// Exception = ambiguous, flagged, or low-conf → escalate / inspect
-// Review = everything in between → manual validation needed
+// Fast      = high-conf clean cases → near 1-click approve
+// Review    = moderate conf, minor flags → manual validation needed
+// Exception = ambiguous, heavily flagged, low-conf → escalate / inspect
 
 export type ReviewLane = "fast" | "review" | "exception";
 
 export function getReviewLane(c: ViolationCase): ReviewLane {
-  const hasFlags   = c.exceptionFlags.length > 0;
-  const lowAI      = c.aiConfidence < 65;
-  const lowPlate   = c.plateConfidence < 60;
+  const hasFlags = c.exceptionFlags.length > 0;
+  const lowAI    = c.aiConfidence < 65;
+  const lowPlate = c.plateConfidence < 60;
   if (lowAI || hasFlags || lowPlate) return "exception";
   if (c.aiConfidence >= 85 && c.plateConfidence >= 85 && c.suggestedAction === "approve") return "fast";
   return "review";
+}
+
+// ─── Decision guidance label ──────────────────────────────────────────────────
+export type DecisionGuidance =
+  | "quick_approve"
+  | "needs_review"
+  | "inspect_carefully"
+  | "escalate_likely";
+
+export function getDecisionGuidance(c: ViolationCase): DecisionGuidance {
+  const hasEmergency = c.exceptionFlags.some((f) =>
+    f.includes("emergency") || f.includes("strobe")
+  );
+  if (hasEmergency) return "escalate_likely";
+
+  const hasHeavyFlags = c.exceptionFlags.length >= 2;
+  const lowAI         = c.aiConfidence < 65;
+  const lowPlate      = c.plateConfidence < 60;
+
+  if (lowAI || lowPlate || hasHeavyFlags) return "inspect_carefully";
+  if (c.aiConfidence >= 85 && c.plateConfidence >= 85 && c.exceptionFlags.length === 0 && c.suggestedAction === "approve") return "quick_approve";
+  return "needs_review";
 }
 
 // ─── Helper: Get confidence bucket ───────────────────────────────────────────
@@ -451,7 +452,7 @@ export function getConfidenceBucket(
   return "low";
 }
 
-// ─── Dismiss reason labels ────────────────────────────────────────────────────
+// ─── Dismiss / Escalate reason list ──────────────────────────────────────────
 export const DISMISS_REASONS: Array<{
   value: string;
   label: string;
@@ -460,12 +461,17 @@ export const DISMISS_REASONS: Array<{
   {
     value: "emergency_vehicle",
     label: "Emergency Vehicle",
-    description: "Authorized emergency response in progress",
+    description: "Authorised emergency response in progress",
   },
   {
     value: "unreadable_plate",
     label: "Unreadable Plate",
     description: "Plate could not be confirmed with sufficient confidence",
+  },
+  {
+    value: "ocr_mismatch",
+    label: "OCR / Plate Mismatch",
+    description: "OCR output conflicts with VAHAN records",
   },
   {
     value: "no_actual_violation",
@@ -475,40 +481,42 @@ export const DISMISS_REASONS: Array<{
   {
     value: "unclear_signage",
     label: "Unclear / Missing Signage",
-    description: "Signage absent, obstructed, or ambiguous",
+    description: "Signage absent, obstructed, or ambiguous at location",
   },
   {
     value: "poor_visibility",
-    label: "Poor Visibility / Weather",
-    description: "Weather or lighting degraded evidence quality",
+    label: "Low Visibility / Weather",
+    description: "Rain, night glare, or fog degraded evidence quality",
+  },
+  {
+    value: "contextual_ambiguity",
+    label: "Contextual Ambiguity",
+    description: "Traffic or road conditions create genuine ambiguity",
+  },
+  {
+    value: "policy_ambiguity",
+    label: "Policy Ambiguity",
+    description: "Enforcement rules unclear or zone notification pending",
   },
   {
     value: "wrong_vehicle_match",
     label: "Wrong Vehicle Match",
-    description: "Detected vehicle does not match DMV record",
-  },
-  {
-    value: "ambiguous_lane_marking",
-    label: "Ambiguous Lane Marking",
-    description: "Lane boundaries unclear or heavily faded",
-  },
-  {
-    value: "ocr_mismatch",
-    label: "OCR / Plate Mismatch",
-    description: "OCR output conflicts with available DMV records",
+    description: "Detected vehicle does not match VAHAN record",
   },
 ];
 
 // ─── Violation type labels ────────────────────────────────────────────────────
 export const VIOLATION_TYPE_LABELS: Record<string, string> = {
-  red_light: "Red Light",
-  speeding: "Speeding",
-  illegal_turn: "Illegal Turn",
-  parking: "Parking",
-  bus_lane: "Bus Lane",
-  hov: "HOV Violation",
-  emergency_vehicle: "Emergency Vehicle",
-  low_visibility: "Low Visibility",
-  ocr_mismatch: "OCR Mismatch",
-  false_detection: "False Detection",
+  red_light:           "Red Light",
+  speeding:            "Speeding",
+  wrong_side:          "Wrong Side",
+  no_helmet:           "No Helmet",
+  illegal_turn:        "Illegal Turn",
+  parking:             "No-Parking",
+  bus_lane:            "Bus Lane",
+  blocked_intersection:"Blocked Junction",
+  emergency_vehicle:   "Emergency Override",
+  low_visibility:      "Low Visibility",
+  ocr_mismatch:        "OCR Mismatch",
+  false_detection:     "False Detection",
 };

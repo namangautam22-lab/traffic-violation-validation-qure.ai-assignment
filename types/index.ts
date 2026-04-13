@@ -3,10 +3,12 @@
 export type ViolationType =
   | "red_light"
   | "speeding"
+  | "wrong_side"
+  | "no_helmet"
   | "illegal_turn"
   | "parking"
   | "bus_lane"
-  | "hov"
+  | "blocked_intersection"
   | "emergency_vehicle"
   | "low_visibility"
   | "ocr_mismatch"
@@ -25,12 +27,14 @@ export type UserDecision = "approved" | "dismissed" | "escalated";
 export type DismissReason =
   | "emergency_vehicle"
   | "unreadable_plate"
+  | "ocr_mismatch"
   | "no_actual_violation"
   | "unclear_signage"
   | "poor_visibility"
+  | "contextual_ambiguity"
+  | "policy_ambiguity"
   | "wrong_vehicle_match"
-  | "ambiguous_lane_marking"
-  | "ocr_mismatch";
+  | "ambiguous_lane_marking";
 
 // ─── Evidence Frame ───────────────────────────────────────────────────────────
 

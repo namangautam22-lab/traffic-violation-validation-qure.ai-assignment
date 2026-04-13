@@ -102,7 +102,7 @@ const initialState: ReviewState = {
 };
 
 // ─── Reviewer mock identity (in a real app, would come from auth) ─────────────
-const REVIEWER = { id: "REV-001", name: "Officer A. Williams" };
+const REVIEWER = { id: "REV-001", name: "Inspector A. Sharma" };
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 
